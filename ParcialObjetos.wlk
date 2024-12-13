@@ -33,6 +33,10 @@ class Pizzeria{
     const property costoBase
     const property factorChetez
     const property tipoPizzeria
+    var property historial 
+    
+    const property listaClientesHistorial = historial.map{cliente => cliente.cliente()} // Me devuelve el objeto cliente de la nueva clase que cree
+
 
     method precioFinalPizza(pizza) = (pizza.precio()+costoBase)*factorChetez.valor()
     method precioFinalPedido(pedido) = (pedido.sum{pizza => pizza.precio()}+costoBase)*factorChetez.valor()
@@ -41,8 +45,24 @@ class Pizzeria{
         const entregar = new Entrega(pedido = pedido,precioPedido = self.precioFinalPedido(pedido),aEntregar = loEntregado,precioFinalPedido = self.precioFinalPedido(loEntregado))
     
         cliente.recibirEntrega(entregar)
+        if(!listaClientesHistorial.contains(cliente)){
+            const nuevoCliente = new HistorialCliente(cliente = cliente,historial = loEntregado)
+
+            historial.add(nuevoCliente)
+        }else{
+            const historialDelCliente = historial.filter{clienteHistorial => clienteHistorial.cliente() == cliente}
+
+            historialDelCliente.agregarPizzasAlHistorial(loEntregado)
+        }
     }
     method loEntregado(pedido) = tipoPizzeria.modificacion(pedido)
+}
+
+class HistorialCliente{
+    const property cliente
+    const property historial
+
+    method agregarPizzasAlHistorial(pizzas){pizzas.all{pizza => historial.add(pizza)}}
 }
 
 class PizzeriaTipoIngredienteExtra{
